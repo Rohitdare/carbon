@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  orderer.example.com:
+    extends:
+      file: peer-base.yaml
+      service: orderer-base
+    container_name: orderer.example.com
+    ports:
+      - 7050:7050
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+      - orderer.example.com:/var/hyperledger/production/orderer
+
+  peer0.government.example.com:
+    container_name: peer0.government.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 7051:7051
+    environment:
+      - CORE_PEER_ID=peer0.government.example.com
+      - CORE_PEER_ADDRESS=peer0.government.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.government.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.government.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.government.example.com:7051
+      - CORE_PEER_LOCALMSPID=GovernmentMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/government.example.com/peers/peer0.government.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/government.example.com/peers/peer0.government.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.government.example.com:/var/hyperledger/production
+
+  peer1.government.example.com:
+    container_name: peer1.government.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 8051:8051
+    environment:
+      - CORE_PEER_ID=peer1.government.example.com
+      - CORE_PEER_ADDRESS=peer1.government.example.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.government.example.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.government.example.com:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.government.example.com:7051
+      - CORE_PEER_LOCALMSPID=GovernmentMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/government.example.com/peers/peer1.government.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/government.example.com/peers/peer1.government.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.government.example.com:/var/hyperledger/production
+
+  peer0.ngo.example.com:
+    container_name: peer0.ngo.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 9051:9051
+    environment:
+      - CORE_PEER_ID=peer0.ngo.example.com
+      - CORE_PEER_ADDRESS=peer0.ngo.example.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.ngo.example.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ngo.example.com:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ngo.example.com:9051
+      - CORE_PEER_LOCALMSPID=NGOMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/ngo.example.com/peers/peer0.ngo.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/ngo.example.com/peers/peer0.ngo.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.ngo.example.com:/var/hyperledger/production
+
+  peer1.ngo.example.com:
+    container_name: peer1.ngo.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 10051:10051
+    environment:
+      - CORE_PEER_ID=peer1.ngo.example.com
+      - CORE_PEER_ADDRESS=peer1.ngo.example.com:10051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.ngo.example.com:10052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.ngo.example.com:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ngo.example.com:9051
+      - CORE_PEER_LOCALMSPID=NGOMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/ngo.example.com/peers/peer1.ngo.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/ngo.example.com/peers/peer1.ngo.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.ngo.example.com:/var/hyperledger/production
+
+  peer0.verifier.example.com:
+    container_name: peer0.verifier.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 11051:11051
+    environment:
+      - CORE_PEER_ID=peer0.verifier.example.com
+      - CORE_PEER_ADDRESS=peer0.verifier.example.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.verifier.example.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.verifier.example.com:11051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.verifier.example.com:11051
+      - CORE_PEER_LOCALMSPID=VerifierMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/verifier.example.com/peers/peer0.verifier.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/verifier.example.com/peers/peer0.verifier.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.verifier.example.com:/var/hyperledger/production
+
+  peer1.verifier.example.com:
+    container_name: peer1.verifier.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    ports:
+      - 12051:12051
+    environment:
+      - CORE_PEER_ID=peer1.verifier.example.com
+      - CORE_PEER_ADDRESS=peer1.verifier.example.com:12051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.verifier.example.com:12052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.verifier.example.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.verifier.example.com:11051
+      - CORE_PEER_LOCALMSPID=VerifierMSP
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/verifier.example.com/peers/peer1.verifier.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/verifier.example.com/peers/peer1.verifier.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.verifier.example.com:/var/hyperledger/production
+
+volumes:
+  orderer.example.com:
+  peer0.government.example.com:
+  peer1.government.example.com:
+  peer0.ngo.example.com:
+  peer1.ngo.example.com:
+  peer0.verifier.example.com:
+  peer1.verifier.example.com:
+

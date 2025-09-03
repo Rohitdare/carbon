@@ -1,0 +1,188 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with PostGIS
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: blue-carbon-postgres
+    environment:
+      POSTGRES_DB: blue_carbon_mrv
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - blue-carbon-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: blue-carbon-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - blue-carbon-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blue-carbon-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/blue_carbon_mrv
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      GOOGLE_EARTH_ENGINE_KEY: ${GOOGLE_EARTH_ENGINE_KEY}
+      BLOCKCHAIN_NETWORK_URL: http://blockchain:7054
+      BLOCKCHAIN_CHANNEL_NAME: carbon-credits-channel
+      BLOCKCHAIN_CHAINCODE_NAME: carbon-credits
+      BLOCKCHAIN_USER_ID: admin
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./blockchain/network-config:/app/network-config
+      - ./blockchain/wallet:/app/wallet
+    depends_on:
+      - postgres
+      - redis
+      - blockchain
+    networks:
+      - blue-carbon-network
+
+  # AI/ML Service
+  ai-ml:
+    build:
+      context: ./ai-ml
+      dockerfile: Dockerfile
+    container_name: blue-carbon-ai-ml
+    environment:
+      PYTHONPATH: /app
+      MODEL_PATH: /app/models
+      GOOGLE_EARTH_ENGINE_KEY: ${GOOGLE_EARTH_ENGINE_KEY}
+      BACKEND_API_URL: http://backend:8000
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./ai-ml:/app
+      - ai_models:/app/models
+    depends_on:
+      - backend
+    networks:
+      - blue-carbon-network
+
+  # Hyperledger Fabric Network
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    container_name: blue-carbon-blockchain
+    environment:
+      FABRIC_LOGGING_SPEC: INFO
+      CORE_PEER_ID: peer0.government.example.com
+      CORE_PEER_ADDRESS: peer0.government.example.com:7051
+      CORE_PEER_LISTENADDRESS: 0.0.0.0:7051
+      CORE_PEER_CHAINCODEADDRESS: peer0.government.example.com:7052
+      CORE_PEER_CHAINCODELISTENADDRESS: 0.0.0.0:7052
+      CORE_PEER_GOSSIP_BOOTSTRAP: peer0.government.example.com:7051
+      CORE_PEER_GOSSIP_EXTERNALENDPOINT: peer0.government.example.com:7051
+      CORE_PEER_LOCALMSPID: GovernmentMSP
+      CORE_PEER_TLS_ENABLED: true
+      CORE_PEER_TLS_CERT_FILE: /etc/hyperledger/fabric/tls/server.crt
+      CORE_PEER_TLS_KEY_FILE: /etc/hyperledger/fabric/tls/server.key
+      CORE_PEER_TLS_ROOTCERT_FILE: /etc/hyperledger/fabric/tls/ca.crt
+    ports:
+      - "7050:7050"
+      - "7051:7051"
+      - "7054:7054"
+    volumes:
+      - ./blockchain:/opt/gopath/src/github.com/hyperledger/fabric/peer
+      - ./blockchain/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+      - ./blockchain/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+      - blockchain_data:/var/hyperledger
+    networks:
+      - blue-carbon-network
+
+  # Web Dashboard
+  web-dashboard:
+    build:
+      context: ./web-dashboard
+      dockerfile: Dockerfile
+    container_name: blue-carbon-web-dashboard
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+      REACT_APP_BLOCKCHAIN_URL: http://localhost:7054
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web-dashboard:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - blue-carbon-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: blue-carbon-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - web-dashboard
+      - backend
+    networks:
+      - blue-carbon-network
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: blue-carbon-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - blue-carbon-network
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: blue-carbon-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - blue-carbon-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  ai_models:
+  blockchain_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  blue-carbon-network:
+    driver: bridge

@@ -1,0 +1,139 @@
+/* App-specific styles */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+}
+
+.app-sidebar {
+  width: 256px;
+  flex-shrink: 0;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.app-content-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-main {
+    flex-direction: column;
+  }
+  
+  .app-sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .app-content-inner {
+    padding: 1rem;
+  }
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Animation utilities */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Print styles */
+@media print {
+  .app-header,
+  .app-sidebar,
+  .no-print {
+    display: none !important;
+  }
+  
+  .app-content {
+    background: white !important;
+  }
+  
+  .app-content-inner {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}
+

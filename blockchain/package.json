@@ -1,0 +1,39 @@
+{
+  "name": "blue-carbon-mrv-blockchain",
+  "version": "1.0.0",
+  "description": "Hyperledger Fabric blockchain integration for Blue Carbon MRV Platform",
+  "main": "index.js",
+  "scripts": {
+    "setup": "chmod +x scripts/*.sh && ./scripts/network-setup.sh",
+    "teardown": "chmod +x scripts/*.sh && ./scripts/network-teardown.sh",
+    "test": "chmod +x scripts/*.sh && ./scripts/test-chaincode.sh",
+    "start": "docker-compose -f docker/docker-compose.yaml up -d",
+    "stop": "docker-compose -f docker/docker-compose.yaml down",
+    "logs": "docker-compose -f docker/docker-compose.yaml logs -f",
+    "clean": "docker system prune -f && docker volume prune -f"
+  },
+  "keywords": [
+    "hyperledger-fabric",
+    "blockchain",
+    "carbon-credits",
+    "blue-carbon",
+    "mrv",
+    "smart-contracts"
+  ],
+  "author": "Blue Carbon MRV Team",
+  "license": "MIT",
+  "dependencies": {
+    "fabric-ca-client": "^2.2.19",
+    "fabric-network": "^2.2.19",
+    "grpc": "^1.24.11"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
+

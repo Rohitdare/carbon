@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta
+      name="description"
+      content="Blue Carbon MRV Platform - Measurement, Reporting, and Verification for Blue Carbon Projects"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="keywords" content="blue carbon, carbon credits, MRV, measurement reporting verification, climate change, carbon sequestration, mangrove, seagrass, salt marsh" />
+    <meta name="author" content="Blue Carbon MRV Platform" />
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="Blue Carbon MRV Platform" />
+    <meta property="og:description" content="Measurement, Reporting, and Verification for Blue Carbon Projects" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%PUBLIC_URL%" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Blue Carbon MRV Platform" />
+    <meta name="twitter:description" content="Measurement, Reporting, and Verification for Blue Carbon Projects" />
+    <meta name="twitter:image" content="%PUBLIC_URL%/twitter-image.png" />
+    
+    <title>Blue Carbon MRV Platform</title>
+  </head>
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: Arial, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>You need to enable JavaScript to run this application.</p>
+        <p>Please enable JavaScript in your browser settings and refresh the page.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    
+    <!-- Loading fallback -->
+    <div id="loading-fallback" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f9fafb; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: 'Inter', sans-serif;">
+      <div style="width: 40px; height: 40px; border: 4px solid #e5e7eb; border-top: 4px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <p style="margin-top: 1rem; color: #6b7280;">Loading Blue Carbon MRV Platform...</p>
+    </div>
+    
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </body>
+</html>
+

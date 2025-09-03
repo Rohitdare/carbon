@@ -1,0 +1,45 @@
+# Core ML/AI libraries
+tensorflow==2.15.0
+torch==2.1.0
+torchvision==0.16.0
+scikit-learn==1.3.2
+numpy==1.24.3
+pandas==2.0.3
+
+# Geospatial and satellite data processing
+rasterio==1.3.8
+geopandas==0.14.0
+shapely==2.0.2
+folium==0.14.0
+earthengine-api==0.1.365
+
+# Data processing and visualization
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.17.0
+opencv-python==4.8.1.78
+
+# API and web framework
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# Database and caching
+psycopg2-binary==2.9.7
+redis==5.0.1
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+aiofiles==23.2.1
+Pillow==10.1.0
+joblib==1.3.2
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
